@@ -58,6 +58,7 @@ func TestAccResourceIndexSettings(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "name", indexName),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "number_of_shards", "2"),
+					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "number_of_replicas", "0"),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "number_of_routing_shards", "2"),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "codec", "best_compression"),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "routing_partition_size", "1"),
@@ -87,8 +88,6 @@ func TestAccResourceIndexSettings(t *testing.T) {
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "analysis_analyzer", `{"text_en":{"char_filter":"zero_width_spaces","filter":["lowercase","minimal_english_stemmer"],"tokenizer":"standard","type":"custom"}}`),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "analysis_char_filter", `{"zero_width_spaces":{"mappings":["\\u200C=\u003e\\u0020"],"type":"mapping"}}`),
 					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "analysis_filter", `{"minimal_english_stemmer":{"language":"minimal_english","type":"stemmer"}}`),
-					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "settings.0.setting.0.name", "number_of_replicas"),
-					resource.TestCheckResourceAttr("elasticstack_elasticsearch_index.test_settings", "settings.0.setting.0.value", "2"),
 				),
 			},
 		},
@@ -222,6 +221,7 @@ resource "elasticstack_elasticsearch_index" "test_settings" {
   })
 
   number_of_shards = 2
+  number_of_replicas = 0
   number_of_routing_shards = 2
   codec = "best_compression"
   routing_partition_size = 1
@@ -269,13 +269,6 @@ resource "elasticstack_elasticsearch_index" "test_settings" {
       filter = ["lowercase", "minimal_english_stemmer"]
     }
   })
-
-  settings {
-    setting {
-      name  = "number_of_replicas"
-      value = "2"
-    }
-  }
 }
 	`, name)
 }
